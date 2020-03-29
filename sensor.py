@@ -1,5 +1,6 @@
-import spidev
+import time
 import math
+import spidev
 
 # Open SPI bus
 spi = spidev.SpiDev()
@@ -9,11 +10,12 @@ spi.max_speed_hz=1000000
 
 class Sensor:
 
-    def __init__(self, param_a, param_b, channel=0, spi_port=0):
+    def __init__(self, name, substance, param_a, param_b, channel):
+        self.name = name
+        self.substance = substance
         self.param_a = param_a
         self.param_b = param_b
         self.channel = channel
-        self.port = spi_port
         self.voltage = self.getVoltage()
         self.ratio = self.getResistanceRatio()
         self.ppm = self.calculatePPM()
@@ -35,34 +37,5 @@ class Sensor:
 
     def calculatePPM(self):
         rs_ro = self.ratio
-        ppm = self.param_a * math.pow(rs_ro, self.param_b)
-        return ppm
-
-
-'''
-# A test function
-if __name__ == '__main__':
-    mq2 = Sensor(['MQ-2', temperature, humidity, consta, constb], 0, 4)
-    mq3 = Sensor
-    ppm = mq2.ppm
-    while mq3.ppm < value: 
-        do something
-        
-        
-put data in csv file
-'''
-'''
-Things we want to put in the parameters vector
-
-    - Mode of calculation/name of sensor
-    - Fundamental constants
-        Log-log 
-            Slope = ppm dependency
-            Intercept = clean air reading
-        Linear (temperature/humidity dependence)
-            p1 (Temperature)
-            p2 (Humidity)    
-'''
-
-
-
+        ppm = self.param_a * math.pow(rs_ro, self.param_b)  #formula for calculating, adjust for calibration
+        return ppm  
